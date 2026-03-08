@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   
+    <!-- CO1: HTML DOCUMENT STRUCTURE -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Blender - Nutrition Calculator</title>
+    
+    <style>
+        
+        /* CO1: CSS BASICS */
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            /* CO1 - Typography: Font styling */
+            font-family: Georgia, serif;
+            font-size: 16px;
+            line-height: 1.6;
+            
+            /* CO1 - Color: Background color */
+            background: linear-gradient(135deg, #f5f0e8 0%, #e8dfd0 100%);
+            
+            /* CO1 - Spacing: Padding (space inside) */
+            padding: 30px 15px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            max-width: 850px;
+            
+            /* CO1 - Spacing: Margin (centers container) */
+            margin: 0 auto;
+            
+            /* CO1 - Spacing: Padding */
+            padding: 45px;
+            
+            /* CO1 - Spacing: Border */
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        
+        .logo {
+            font-size: 70px;
+            text-align: center;
+            margin-bottom: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* CO1: CSS Animation */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        /* CO1: Heading Styles */
+        h1 {
+            color: #2d2d2d;
+            font-size: 46px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        
+        /* CO1: Paragraph Styles */
+        .subtitle {
+            color: #999;
+            font-size: 16px;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        /* INTERACTIVE FEATURE 1: SEARCH BAR */
+        
+        .search-container {
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: Georgia, serif;
+            transition: all 0.3s ease;
+        }
+        
+        /* CO2: :focus pseudo-class selector */
+        .search-box:focus {
+            outline: none;
+            border-color: #7ba37d;
+            box-shadow: 0 0 0 3px rgba(123,163,125,0.1);
+        }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #7ba37d;
+            border-radius: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            margin-top: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .search-results.show {
+            display: block;
+        }
+        
+        .search-item {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s ease;
+        }
+        
+        /* CO2: :hover pseudo-class selector */
+        .search-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .search-name {
+            font-weight: bold;
+            color: #2d2d2d;
+        }
+        
+        .search-use {
+            font-size: 13px;
+            color: #7ba37d;
+            font-style: italic;
+        }
+          /* INTERACTIVE FEATURE : CATEGORY FILTER */
+       .category-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+        
+        .category-pill {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        /* CO2: :hover pseudo-class selector */
+        .category-pill:hover {
+            border-color: #7ba37d;
+            background: #f9f9f9;
+            transform: translateY(-2px);
+        }
+        
+        .category-pill.active {
+            background: #7ba37d;
+            color: white;
+            border-color: #7ba37d;
+        }
+         /* CO2: FLEXBOX LAYOUT */
+         .food-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            align-items: stretch;
+        }
+        
+        /* CO2: FORMS & ADVANCED SELECTORS */
+          select, input {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: Georgia, serif;
+            transition: all 0.3s ease;
+        }
+        
+        select {
+            /* CO2: Flexbox item sizing */
+            flex: 2;
+            cursor: pointer;
+            background: white;
+        }
+        
+        input {
+            /* CO2: Flexbox item sizing */
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        /* CO2: :focus pseudo-class selector */
+        select:focus, input:focus {
+            outline: none;
+            border-color: #7ba37d;
+            box-shadow: 0 0 0 3px rgba(123,163,125,0.1);
+        }
+        
+        .remove-btn {
+            background: #c77d6a;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        /* CO2: :hover pseudo-class selector */
+        .remove-btn:hover {
+            background: #b56d5a;
+            transform: scale(1.05);
+        }
+        
+        button {
+            width: 100%;
+            padding: 17px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            font-family: Georgia, serif;
+        }
+        
+        /* CO2: :hover pseudo-class on buttons */
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .add-btn {
+            background: #7ba37d;
+            color: white;
+        }
+        
+        .add-btn:hover {
+            background: #6a9270;
+        }
+        
+        .calc-btn {
+            background: #8b7865;
+            color: white;
+        }
+        
+        .calc-btn:hover {
+            background: #7a6754;
+        }
+        
+        .reset-btn {
+            background: #b08a9e;
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background: #a07a8e;
+        }
+        
+        .results {
+            margin-top: 35px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        /* CO1: CSS Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h2 {
+            color: #2d2d2d;
+            font-size: 28px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .item-breakdown {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 2px solid #e8e8e8;
+            transition: all 0.3s ease;
+        }
+        
+        .item-breakdown:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: #d0d0d0;
+        }
+        
+        .item-name {
+            color: #8b7865;
+            font-weight: bold;
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        
+        .item-use {
+            color: #7ba37d;
+            font-size: 15px;
+            font-style: italic;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nutrition-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 17px;
+        }
+        
+        .nutrition-label { color: #333; }
+        .nutrition-value { font-weight: bold; color: #2d2d2d; font-size: 18px; }
+        
+        .total-section {
+            background: linear-gradient(135deg, #e8dfd0 0%, #d4c4b0 100%);
+            padding: 30px;
+            margin-top: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .total-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 22px;
+            color: #2d2d2d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            font-size: 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .total-row:last-child { border-bottom: none; }
+        .total-label { color: #2d2d2d; font-weight: 600; }
+        .total-value { color: #8b7865; font-weight: bold; font-size: 20px; }
+        
+        .goals-section { margin-top: 25px; padding: 25px; background: #f0f8f0; border-radius: 12px; border: 1px solid #d0e8d0; }
+        .goal-title { font-size: 19px; font-weight: bold; margin-bottom: 20px; text-align: center; color: #2d2d2d; }
+        .goal-bar { margin-bottom: 20px; }
+        .goal-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; color: #555; font-weight: 600; }
+        .progress-bar { width: 100%; height: 26px; background: #e0e0e0; border-radius: 13px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #7ba37d, #5a8f5a); transition: width 0.5s ease-in-out; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-size: 13px; font-weight: bold; }
+        .info-box { background: #f0f8ff; padding: 20px; border-radius: 10px; margin-top: 25px; border-left: 4px solid #6a9ab0; }
+        .info-box p { margin: 10px 0; color: #555; font-size: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🥗</div>
+        <h1>Meal Blender</h1>
+        <p class="subtitle">200 Food Items: 60 Vegetables, 50 Fruits, 22 Dairy, 68 Indian Foods</p>
+        <p class="subtitle">Smart nutrition calculator with search & filters</p>
+
+        <!-- INTERACTIVE FEATURE 1: SEARCH BAR -->
+        <div class="search-container">
+            <input type="text" 
+                   class="search-box" 
+                   id="searchBox" 
+                   placeholder="🔍 Search foods (e.g., apple, rice, paneer)..." 
+                   onkeyup="searchFoods()">
+            <div class="search-results" id="searchResults"></div>
+        </div>
+
+        <!-- INTERACTIVE FEATURE : CATEGORY FILTER -->
+        <div class="category-pills">
+            <div class="category-pill active" onclick="filterCat('all')">All Foods</div>
+            <div class="category-pill" onclick="filterCat('veg')">Vegetables</div>
+            <div class="category-pill" onclick="filterCat('fruit')">Fruits</div>
+            <div class="category-pill" onclick="filterCat('dairy')">Dairy</div>
+            <div class="category-pill" onclick="filterCat('indian')">Indian</div>
+        </div>
+
+        <div id="mealBuilder">
+            <!--CO2: FORMS WITH INPUT TYPES & ATTRIBUTES -->
+            <div class="food-row">
+                <select class="food-select" required>
+                    <option value="">Choose food item</option>
+                    <optgroup label=" Vegetables (60)">
+                        <option value="spinach">Spinach</option><option value="broccoli">Broccoli</option><option value="carrot">Carrot</option><option value="tomato">Tomato</option><option value="cucumber">Cucumber</option><option value="bell_pepper">Bell Pepper</option><option value="cauliflower">Cauliflower</option><option value="peas">Peas</option><option value="corn">Corn</option><option value="green_beans">Green Beans</option><option value="zucchini">Zucchini</option><option value="eggplant">Eggplant</option><option value="cabbage">Cabbage</option><option value="kale">Kale</option><option value="lettuce">Lettuce</option><option value="onion">Onion</option><option value="garlic">Garlic</option><option value="potato">Potato</option><option value="sweet_potato">Sweet Potato</option><option value="beet">Beet</option><option value="celery">Celery</option><option value="radish">Radish</option><option value="asparagus">Asparagus</option><option value="leek">Leek</option><option value="pumpkin">Pumpkin</option><option value="mushroom">Mushroom</option><option value="brussels_sprouts">Brussels Sprouts</option><option value="artichoke">Artichoke</option><option value="okra">Okra</option><option value="bitter_gourd">Bitter Gourd</option><option value="bottle_gourd">Bottle Gourd</option><option value="ridge_gourd">Ridge Gourd</option><option value="drumstick">Drumstick</option><option value="fenugreek">Fenugreek</option><option value="coriander">Coriander</option><option value="mint">Mint</option><option value="parsley">Parsley</option><option value="chili">Chili</option><option value="ginger">Ginger</option><option value="curry_leaves">Curry Leaves</option><option value="capsicum">Capsicum</option><option value="baby_corn">Baby Corn</option><option value="lotus_root">Lotus Root</option><option value="snake_gourd">Snake Gourd</option><option value="ivy_gourd">Ivy Gourd</option><option value="cluster_beans">Cluster Beans</option><option value="broad_beans">Broad Beans</option><option value="amaranth">Amaranth</option><option value="methi">Methi</option><option value="dill">Dill</option><option value="moringa">Moringa</option><option value="banana_flower">Banana Flower</option><option value="banana_stem">Banana Stem</option><option value="turnip">Turnip</option><option value="parsnip">Parsnip</option><option value="fennel">Fennel</option><option value="bok_choy">Bok Choy</option><option value="watercress">Watercress</option><option value="arugula">Arugula</option><option value="kohlrabi">Kohlrabi</option>
+                    </optgroup>
+                    <optgroup label="Fruits (50)">
+                        <option value="apple">Apple</option><option value="banana">Banana</option><option value="mango">Mango</option><option value="orange">Orange</option><option value="grapes">Grapes</option><option value="strawberry">Strawberry</option><option value="watermelon">Watermelon</option><option value="pineapple">Pineapple</option><option value="papaya">Papaya</option><option value="guava">Guava</option><option value="pomegranate">Pomegranate</option><option value="kiwi">Kiwi</option><option value="pear">Pear</option><option value="peach">Peach</option><option value="plum">Plum</option><option value="cherry">Cherry</option><option value="blueberry">Blueberry</option><option value="raspberry">Raspberry</option><option value="blackberry">Blackberry</option><option value="lychee">Lychee</option><option value="coconut">Coconut</option><option value="avocado">Avocado</option><option value="fig">Fig</option><option value="date">Date</option><option value="apricot">Apricot</option><option value="grapefruit">Grapefruit</option><option value="lime">Lime</option><option value="lemon">Lemon</option><option value="melon">Melon</option><option value="dragon_fruit">Dragon Fruit</option><option value="passion_fruit">Passion Fruit</option><option value="custard_apple">Custard Apple</option><option value="jackfruit">Jackfruit</option><option value="sapodilla">Sapodilla</option><option value="jamun">Jamun</option><option value="amla">Amla</option><option value="sweet_lime">Sweet Lime</option><option value="pomelo">Pomelo</option><option value="cantaloupe">Cantaloupe</option><option value="honeydew">Honeydew</option><option value="tangerine">Tangerine</option><option value="nectarine">Nectarine</option><option value="cranberry">Cranberry</option><option value="mulberry">Mulberry</option><option value="gooseberry">Gooseberry</option><option value="persimmon">Persimmon</option><option value="starfruit">Star Fruit</option><option value="rambutan">Rambutan</option><option value="mangosteen">Mangosteen</option><option value="tamarind">Tamarind</option>
+                    </optgroup>
+                    <optgroup label=" Dairy (22)">
+                        <option value="milk">Milk</option><option value="yogurt">Yogurt (Curd)</option><option value="paneer">Paneer</option><option value="ghee">Ghee</option><option value="butter">Butter</option><option value="cheese">Cheese</option><option value="cream">Cream</option><option value="buttermilk">Buttermilk</option><option value="khoya">Khoya</option><option value="malai">Malai</option><option value="lassi">Lassi</option><option value="shrikhand">Shrikhand</option><option value="cottage_cheese">Cottage Cheese</option><option value="mozzarella">Mozzarella</option><option value="cheddar">Cheddar</option><option value="ricotta">Ricotta</option><option value="cream_cheese">Cream Cheese</option><option value="parmesan">Parmesan</option><option value="greek_yogurt">Greek Yogurt</option><option value="buffalo_milk">Buffalo Milk</option><option value="goat_milk">Goat Milk</option><option value="kefir">Kefir</option>
+                    </optgroup>
+                    <optgroup label="Indian Foods (68)">
+                        <option value="chapati">Chapati</option><option value="rice_white">White Rice</option><option value="rice_brown">Brown Rice</option><option value="wheat_bread">Wheat Bread</option><option value="dal_toor">Toor Dal</option><option value="dal_moong">Moong Dal</option><option value="dal_masoor">Masoor Dal</option><option value="dal_chana">Chana Dal</option><option value="dal_urad">Urad Dal</option><option value="rajma">Rajma</option><option value="chole">Chole</option><option value="poha">Poha</option><option value="upma">Upma</option><option value="idli">Idli</option><option value="dosa">Dosa</option><option value="uttapam">Uttapam</option><option value="paratha">Paratha</option><option value="puri">Puri</option><option value="naan">Naan</option><option value="kulcha">Kulcha</option><option value="bhatura">Bhatura</option><option value="multigrain_bread">Multigrain Bread</option><option value="oats">Oats</option><option value="daliya">Daliya</option><option value="khichdi">Khichdi</option><option value="biryani">Veg Biryani</option><option value="pulao">Pulao</option><option value="sambar">Sambar</option><option value="rasam">Rasam</option><option value="lemon_rice">Lemon Rice</option><option value="curd_rice">Curd Rice</option><option value="pongal">Pongal</option><option value="vada">Vada</option><option value="appam">Appam</option><option value="ragi_dosa">Ragi Dosa</option><option value="bajra_roti">Bajra Roti</option><option value="jowar_roti">Jowar Roti</option><option value="makki_roti">Makki Roti</option><option value="methi_paratha">Methi Paratha</option><option value="aloo_paratha">Aloo Paratha</option><option value="paneer_paratha">Paneer Paratha</option><option value="stuffed_kulcha">Stuffed Kulcha</option><option value="jeera_rice">Jeera Rice</option><option value="kashmiri_pulao">Kashmiri Pulao</option><option value="veg_pulao">Veg Pulao</option><option value="tamarind_rice">Tamarind Rice</option><option value="coconut_rice">Coconut Rice</option><option value="tomato_rice">Tomato Rice</option><option value="mint_rice">Mint Rice</option><option value="pesarattu">Pesarattu</option><option value="akki_roti">Akki Roti</option><option value="thepla">Thepla</option><option value="dhokla">Dhokla</option><option value="khandvi">Khandvi</option><option value="handvo">Handvo</option><option value="methi_thepla">Methi Thepla</option><option value="sabudana_khichdi">Sabudana Khichdi</option><option value="poori">Poori</option><option value="aloo_puri">Aloo Puri</option><option value="masala_dosa">Masala Dosa</option><option value="rava_dosa">Rava Dosa</option><option value="set_dosa">Set Dosa</option><option value="neer_dosa">Neer Dosa</option><option value="wheat_dosa">Wheat Dosa</option><option value="oats_dosa">Oats Dosa</option><option value="moong_dosa">Moong Dal Dosa</option><option value="adai">Adai</option><option value="medu_vada">Medu Vada</option>
+                    </optgroup>
+                </select>
+                <input type="number" step="0.5" min="0.5" max="1000" required placeholder="Quantity">
+            </div>
+        </div>
+
+        <button class="add-btn" onclick="addRow()">+ ADD MORE ITEMS</button>
+        <button class="calc-btn" onclick="calc()">CALCULATE NUTRITION</button>
+        <button class="reset-btn" onclick="location.reload()">RESET</button>
+
+        <div class="results" id="res">
+            <h2>Nutrition Breakdown</h2>
+            <div id="items"></div>
+            
+            <div class="total-section">
+                <div class="total-title"> TOTAL NUTRITION</div>
+                <div class="total-row">
+                    <span class="total-label">Total Calories:</span>
+                    <span class="total-value" id="tc"></span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Total Protein:</span>
+                    <span class="total-value" id="tp"></span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Total Carbs:</span>
+                    <span class="total-value" id="tca"></span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Total Fat:</span>
+                    <span class="total-value" id="tf"></span>
+                </div>
+            </div>
+            
+            <!-- INTERACTIVE FEATURE : NUTRITION GOALS -->
+            <div class="goals-section">
+                <div class="goal-title"> Daily Nutrition Goals (2000 cal diet)</div>
+                <div class="goal-bar">
+                    <div class="goal-label">
+                        <span>Calories</span>
+                        <span id="calGoal">0/2000</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="calProg" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="goal-bar">
+                    <div class="goal-label">
+                        <span>Protein</span>
+                        <span id="proGoal">0/50g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="proProg" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="goal-bar">
+                    <div class="goal-label">
+                        <span>Carbs</span>
+                        <span id="carbGoal">0/300g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="carbProg" style="width:0%"></div>
+                    </div>
+                </div>
+                <div class="goal-bar">
+                    <div class="goal-label">
+                        <span>Fat</span>
+                        <span id="fatGoal">0/70g</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="fatProg" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <p><strong>🔢 Total Items:</strong> <span id="itemCount">0</span> food items in this meal</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       
+        /* CO3: JAVASCRIPT BASICS */
+         /* CO3: OBJECTS - Stores all 200 food items */
+        var foods = {
+            spinach:{n:"Spinach",u:"Iron rich, immunity boost",s:"cup",c:7,p:0.9,ca:1.1,f:0.1},
+            broccoli:{n:"Broccoli",u:"Vitamin C, bone health",s:"cup",c:31,p:2.6,ca:6,f:0.3},
+            carrot:{n:"Carrot",u:"Good for eyesight",s:"carrot",c:25,p:0.6,ca:6,f:0.1},
+            tomato:{n:"Tomato",u:"Heart health, lycopene",s:"tomato",c:22,p:1.1,ca:5,f:0.2},
+            cucumber:{n:"Cucumber",u:"95% water, keeps body hydrated and skin fresh",s:"cucumber",c:32,p:1.4,ca:8,f:0.2},
+            bell_pepper:{n:"Bell Pepper",u:"Vitamin C boost",s:"pepper",c:31,p:1,ca:7,f:0.3},
+            cauliflower:{n:"Cauliflower",u:"Low carb, high fiber",s:"cup",c:25,p:2,ca:5,f:0.3},
+            peas:{n:"Peas",u:"Protein, fiber rich",s:"cup",c:117,p:7.9,ca:21,f:0.6},
+            corn:{n:"Corn",u:"Energy booster",s:"gram",c:0.86,p:0.03,ca:0.19,f:0.01},
+            green_beans:{n:"Green Beans",u:"Vitamin K source",s:"cup",c:44,p:2,ca:10,f:0.4},
+            zucchini:{n:"Zucchini",u:"Weight management",s:"cup",c:20,p:1.5,ca:4,f:0.4},
+            eggplant:{n:"Eggplant",u:"Brain health support",s:"cup",c:35,p:0.8,ca:9,f:0.2},
+            cabbage:{n:"Cabbage",u:"Digestive health",s:"cup",c:22,p:1,ca:5,f:0.1},
+            kale:{n:"Kale",u:"Superfood, vitamin rich",s:"cup",c:33,p:2.9,ca:6,f:0.6},
+            lettuce:{n:"Lettuce",u:"Low calorie, hydrating",s:"cup",c:5,p:0.5,ca:1,f:0.1},
+            onion:{n:"Onion",u:"Anti-inflammatory",s:"onion",c:44,p:1.2,ca:10,f:0.1},
+            garlic:{n:"Garlic",u:"Immune booster",s:"clove",c:4,p:0.2,ca:1,f:0},
+            potato:{n:"Potato",u:"Energy, potassium",s:"potato",c:163,p:4.3,ca:37,f:0.2},
+            sweet_potato:{n:"Sweet Potato",u:"Vitamin A rich",s:"potato",c:112,p:2,ca:26,f:0.1},
+            beet:{n:"Beet",u:"Blood pressure control",s:"beet",c:58,p:2.2,ca:13,f:0.2},
+            celery:{n:"Celery",u:"Hydrating, low calorie",s:"cup",c:16,p:0.7,ca:3,f:0.2},
+            radish:{n:"Radish",u:"Detoxifying properties",s:"cup",c:19,p:0.8,ca:4,f:0.1},
+            asparagus:{n:"Asparagus",u:"Folate rich",s:"cup",c:27,p:3,ca:5,f:0.2},
+            leek:{n:"Leek",u:"Heart health support",s:"cup",c:54,p:1.3,ca:13,f:0.3},
+            pumpkin:{n:"Pumpkin",u:"Eye health, vitamin A",s:"cup",c:30,p:1.2,ca:7,f:0.1},
+            mushroom:{n:"Mushroom",u:"Vitamin D source",s:"cup",c:15,p:2.2,ca:2.3,f:0.2},
+            brussels_sprouts:{n:"Brussels Sprouts",u:"Fiber, vitamin K",s:"cup",c:56,p:4,ca:11,f:0.8},
+            artichoke:{n:"Artichoke",u:"Liver health support",s:"artichoke",c:60,p:4.2,ca:13,f:0.2},
+            okra:{n:"Okra",u:"Blood sugar control",s:"cup",c:33,p:2,ca:7,f:0.2},
+            bitter_gourd:{n:"Bitter Gourd",u:"Diabetes management",s:"cup",c:17,p:0.8,ca:3.7,f:0.2},
+            bottle_gourd:{n:"Bottle Gourd",u:"Cooling, weight loss",s:"cup",c:14,p:0.6,ca:3.4,f:0.02},
+            ridge_gourd:{n:"Ridge Gourd",u:"Blood purifier",s:"cup",c:20,p:1.2,ca:4.5,f:0.2},
+            drumstick:{n:"Drumstick",u:"Bone health support",s:"cup",c:37,p:2,ca:8.5,f:0.2},
+            fenugreek:{n:"Fenugreek",u:"Digestive aid",s:"cup",c:6,p:0.9,ca:0.6,f:0.1},
+            coriander:{n:"Coriander",u:"Antioxidant rich",s:"cup",c:1,p:0.1,ca:0.1,f:0},
+            mint:{n:"Mint",u:"Digestive aid, fresh",s:"cup",c:6,p:0.6,ca:1.2,f:0.1},
+            parsley:{n:"Parsley",u:"Vitamin K rich",s:"cup",c:22,p:1.8,ca:3.8,f:0.5},
+            chili:{n:"Chili",u:"Metabolism booster",s:"pepper",c:18,p:0.9,ca:4,f:0.2},
+            ginger:{n:"Ginger",u:"Anti-inflammatory",s:"gram",c:0.8,p:0.02,ca:0.18,f:0.01},
+            curry_leaves:{n:"Curry Leaves",u:"Digestive health",s:"gram",c:1.08,p:0.06,ca:0.18,f:0.01},
+            capsicum:{n:"Capsicum",u:"Antioxidant rich",s:"pepper",c:20,p:0.9,ca:4.6,f:0.2},
+            baby_corn:{n:"Baby Corn",u:"Low calorie snack",s:"cup",c:30,p:1.5,ca:6,f:0.3},
+            lotus_root:{n:"Lotus Root",u:"Vitamin C rich",s:"cup",c:74,p:2.6,ca:17.2,f:0.1},
+            snake_gourd:{n:"Snake Gourd",u:"Digestive health",s:"cup",c:18,p:1.1,ca:4.2,f:0.1},
+            ivy_gourd:{n:"Ivy Gourd",u:"Blood sugar control",s:"cup",c:19,p:1.4,ca:3.7,f:0.2},
+            cluster_beans:{n:"Cluster Beans",u:"Fiber rich",s:"cup",c:49,p:3.2,ca:10.8,f:0.5},
+            broad_beans:{n:"Broad Beans",u:"Protein source",s:"cup",c:187,p:12.5,ca:33,f:0.7},
+            amaranth:{n:"Amaranth",u:"Iron rich greens",s:"cup",c:23,p:2.1,ca:4.6,f:0.3},
+            methi:{n:"Methi",u:"Blood sugar control",s:"cup",c:49,p:4.4,ca:6.4,f:0.9},
+            dill:{n:"Dill",u:"Digestive health",s:"cup",c:4,p:0.3,ca:0.6,f:0.1},
+            moringa:{n:"Moringa",u:"Super nutritious",s:"cup",c:13,p:2,ca:1.8,f:0.3},
+            banana_flower:{n:"Banana Flower",u:"Digestive health",s:"cup",c:51,p:1.6,ca:9.9,f:0.6},
+            banana_stem:{n:"Banana Stem",u:"Detoxifying",s:"cup",c:20,p:0.8,ca:4,f:0.2},
+            turnip:{n:"Turnip",u:"Vitamin C source",s:"cup",c:36,p:1.2,ca:8,f:0.1},
+            parsnip:{n:"Parsnip",u:"Fiber rich",s:"cup",c:100,p:1.6,ca:24,f:0.4},
+            fennel:{n:"Fennel",u:"Digestive aid",s:"cup",c:27,p:1.1,ca:6,f:0.2},
+            bok_choy:{n:"Bok Choy",u:"Bone health support",s:"cup",c:9,p:1.1,ca:1.5,f:0.1},
+            watercress:{n:"Watercress",u:"Vitamin K powerhouse",s:"cup",c:4,p:0.8,ca:0.4,f:0},
+            arugula:{n:"Arugula",u:"Folate rich",s:"cup",c:5,p:0.5,ca:0.7,f:0.1},
+            kohlrabi:{n:"Kohlrabi",u:"Vitamin C source",s:"cup",c:36,p:2.3,ca:8,f:0.1},
+            apple:{n:"Apple",u:"Heart health, fiber",s:"apple",c:95,p:0.5,ca:25,f:0.3},
+            banana:{n:"Banana",u:"Energy, potassium",s:"banana",c:105,p:1.3,ca:27,f:0.4},
+            mango:{n:"Mango",u:"Vitamin A rich",s:"mango",c:202,p:2.8,ca:50,f:1.3},
+            orange:{n:"Orange",u:"Vitamin C boost",s:"orange",c:62,p:1.2,ca:15,f:0.2},
+            grapes:{n:"Grapes",u:"Antioxidants, heart health",s:"gram",c:0.69,p:0.007,ca:0.18,f:0.002},
+            strawberry:{n:"Strawberry",u:"Vitamin C, skin health",s:"gram",c:0.32,p:0.007,ca:0.077,f:0.003},
+            watermelon:{n:"Watermelon",u:"Hydrating, lycopene",s:"cup",c:46,p:0.9,ca:12,f:0.2},
+            pineapple:{n:"Pineapple",u:"Digestive enzyme",s:"cup",c:82,p:0.9,ca:22,f:0.2},
+            papaya:{n:"Papaya",u:"Digestive health",s:"cup",c:62,p:0.7,ca:16,f:0.4},
+            guava:{n:"Guava",u:"Vitamin C powerhouse",s:"guava",c:37,p:1.4,ca:8,f:0.5},
+            pomegranate:{n:"Pomegranate",u:"Antioxidant rich",s:"cup",c:144,p:3,ca:32,f:2},
+            kiwi:{n:"Kiwi",u:"Vitamin C, digestive",s:"kiwi",c:42,p:0.8,ca:10,f:0.4},
+            pear:{n:"Pear",u:"Fiber rich fruit",s:"pear",c:101,p:0.6,ca:27,f:0.2},
+            peach:{n:"Peach",u:"Skin health support",s:"peach",c:58,p:1.4,ca:14,f:0.4},
+            plum:{n:"Plum",u:"Bone health support",s:"plum",c:30,p:0.5,ca:8,f:0.2},
+            cherry:{n:"Cherry",u:"Anti-inflammatory",s:"gram",c:0.63,p:0.01,ca:0.16,f:0.002},
+            blueberry:{n:"Blueberry",u:"Brain health booster",s:"gram",c:0.57,p:0.007,ca:0.14,f:0.003},
+            raspberry:{n:"Raspberry",u:"Fiber rich berry",s:"gram",c:0.52,p:0.012,ca:0.12,f:0.007},
+            blackberry:{n:"Blackberry",u:"Vitamin C rich",s:"gram",c:0.43,p:0.014,ca:0.096,f:0.005},
+            lychee:{n:"Lychee",u:"Vitamin C source",s:"gram",c:0.66,p:0.008,ca:0.17,f:0.004},
+            coconut:{n:"Coconut",u:"Healthy fats",s:"cup",c:283,p:2.7,ca:12,f:27},
+            avocado:{n:"Avocado",u:"Healthy fats, potassium",s:"avocado",c:234,p:2.9,ca:12,f:21},
+            fig:{n:"Fig",u:"Digestive health",s:"fig",c:47,p:0.5,ca:12,f:0.2},
+            date:{n:"Date",u:"Energy booster",s:"date",c:20,p:0.2,ca:5,f:0},
+            apricot:{n:"Apricot",u:"Eye health support",s:"apricot",c:17,p:0.5,ca:4,f:0.1},
+            grapefruit:{n:"Grapefruit",u:"Weight loss aid",s:"grapefruit",c:52,p:0.9,ca:13,f:0.2},
+            lime:{n:"Lime",u:"Vitamin C source",s:"lime",c:20,p:0.5,ca:7,f:0.1},
+            lemon:{n:"Lemon",u:"Detox, vitamin C",s:"lemon",c:17,p:0.6,ca:5,f:0.2},
+            melon:{n:"Melon",u:"Hydrating fruit",s:"cup",c:54,p:1.3,ca:13,f:0.3},
+            dragon_fruit:{n:"Dragon Fruit",u:"Antioxidant rich",s:"cup",c:102,p:2,ca:22,f:0.6},
+            passion_fruit:{n:"Passion Fruit",u:"Vitamin C, fiber",s:"fruit",c:17,p:0.4,ca:4,f:0.1},
+            custard_apple:{n:"Custard Apple",u:"Energy boost",s:"fruit",c:236,p:5,ca:59,f:0.6},
+            jackfruit:{n:"Jackfruit",u:"Energy source",s:"cup",c:155,p:2.8,ca:38,f:0.5},
+            sapodilla:{n:"Sapodilla",u:"Energy booster",s:"fruit",c:83,p:0.4,ca:20,f:1.1},
+            jamun:{n:"Jamun",u:"Blood sugar control",s:"gram",c:0.6,p:0.007,ca:0.14,f:0.002},
+            amla:{n:"Amla",u:"Vitamin C powerhouse",s:"amla",c:44,p:0.9,ca:10.2,f:0.6},
+            sweet_lime:{n:"Sweet Lime",u:"Vitamin C source",s:"lime",c:43,p:0.7,ca:9.3,f:0.3},
+            pomelo:{n:"Pomelo",u:"Vitamin C rich",s:"cup",c:72,p:1.4,ca:18,f:0.1},
+            cantaloupe:{n:"Cantaloupe",u:"Hydrating melon",s:"cup",c:60,p:1.5,ca:14.4,f:0.3},
+            honeydew:{n:"Honeydew",u:"Vitamin C source",s:"cup",c:64,p:1,ca:16,f:0.2},
+            tangerine:{n:"Tangerine",u:"Vitamin C boost",s:"tangerine",c:47,p:0.7,ca:11.7,f:0.3},
+            nectarine:{n:"Nectarine",u:"Vitamin A source",s:"nectarine",c:63,p:1.5,ca:15.1,f:0.5},
+            cranberry:{n:"Cranberry",u:"UTI prevention",s:"gram",c:0.46,p:0.004,ca:0.12,f:0.001},
+            mulberry:{n:"Mulberry",u:"Vitamin C rich",s:"cup",c:60,p:2,ca:14,f:0.5},
+            gooseberry:{n:"Gooseberry",u:"Vitamin C powerhouse",s:"cup",c:66,p:1.3,ca:15,f:0.9},
+            persimmon:{n:"Persimmon",u:"Fiber rich fruit",s:"persimmon",c:118,p:1,ca:31,f:0.3},
+            starfruit:{n:"Star Fruit",u:"Vitamin C source",s:"fruit",c:28,p:1,ca:6,f:0.3},
+            rambutan:{n:"Rambutan",u:"Vitamin C rich",s:"fruit",c:7,p:0.1,ca:1.6,f:0.02},
+            mangosteen:{n:"Mangosteen",u:"Antioxidant rich",s:"fruit",c:73,p:0.4,ca:17.9,f:0.6},
+            tamarind:{n:"Tamarind",u:"Digestive aid",s:"cup",c:287,p:3.4,ca:75,f:0.7},
+            milk:{n:"Milk",u:"Calcium, bone health",s:"cup",c:149,p:8,ca:12,f:8},
+            yogurt:{n:"Yogurt (Curd)",u:"Probiotics, gut health",s:"cup",c:154,p:13,ca:17,f:4},
+            paneer:{n:"Paneer",u:"Protein rich",s:"gram",c:2.65,p:0.18,ca:0.03,f:0.2},
+            ghee:{n:"Ghee",u:"Healthy cooking fat",s:"tablespoon",c:112,p:0,ca:0,f:13},
+            butter:{n:"Butter",u:"Cooking fat, vitamin A",s:"tablespoon",c:102,p:0.1,ca:0,f:12},
+            cheese:{n:"Cheese",u:"Calcium, protein",s:"slice",c:113,p:7,ca:0.4,f:9},
+            cream:{n:"Cream",u:"Cooking ingredient",s:"tablespoon",c:52,p:0.4,ca:0.4,f:5.5},
+            buttermilk:{n:"Buttermilk",u:"Probiotics, cooling",s:"cup",c:98,p:8,ca:12,f:2.2},
+            khoya:{n:"Khoya",u:"Indian sweets base",s:"gram",c:3.57,p:0.25,ca:0.26,f:0.28},
+            malai:{n:"Malai",u:"Cream topping",s:"tablespoon",c:52,p:0.4,ca:0.4,f:5.5},
+            lassi:{n:"Lassi",u:"Refreshing drink",s:"cup",c:160,p:8,ca:24,f:4},
+            shrikhand:{n:"Shrikhand",u:"Sweet dessert",s:"cup",c:180,p:6,ca:32,f:4},
+            cottage_cheese:{n:"Cottage Cheese",u:"High protein",s:"cup",c:163,p:28,ca:6,f:2.3},
+            mozzarella:{n:"Mozzarella",u:"Pizza cheese",s:"slice",c:85,p:6.3,ca:0.6,f:6.3},
+            cheddar:{n:"Cheddar",u:"Calcium rich",s:"slice",c:113,p:7,ca:0.4,f:9},
+            ricotta:{n:"Ricotta",u:"High protein",s:"gram",c:1.74,p:0.11,ca:0.03,f:0.13},
+            cream_cheese:{n:"Cream Cheese",u:"Spread, baking",s:"tablespoon",c:51,p:0.9,ca:0.4,f:5.1},
+            parmesan:{n:"Parmesan",u:"Flavor enhancer",s:"tablespoon",c:21,p:1.9,ca:0.2,f:1.4},
+            greek_yogurt:{n:"Greek Yogurt",u:"High protein yogurt",s:"cup",c:100,p:17,ca:6,f:0.7},
+            buffalo_milk:{n:"Buffalo Milk",u:"Rich calcium source",s:"cup",c:237,p:9,ca:13,f:17},
+            goat_milk:{n:"Goat Milk",u:"Easily digestible",s:"cup",c:168,p:9,ca:11,f:10},
+            kefir:{n:"Kefir",u:"Probiotic drink",s:"cup",c:104,p:9,ca:12,f:2.5},
+            chapati:{n:"Chapati",u:"Whole wheat flatbread",s:"chapati",c:71,p:2.4,ca:14.9,f:0.4},
+            rice_white:{n:"White Rice",u:"Energy source",s:"cup",c:205,p:4.3,ca:45,f:0.4},
+            rice_brown:{n:"Brown Rice",u:"Fiber rich rice",s:"cup",c:216,p:5,ca:45,f:1.8},
+            wheat_bread:{n:"Wheat Bread",u:"Fiber, B vitamins",s:"slice",c:79,p:4,ca:13.8,f:1},
+            dal_toor:{n:"Toor Dal",u:"Protein, fiber",s:"cup",c:198,p:10,ca:36,f:0.8},
+            dal_moong:{n:"Moong Dal",u:"Light, digestible",s:"cup",c:212,p:14,ca:38,f:0.8},
+            dal_masoor:{n:"Masoor Dal",u:"Protein rich lentil",s:"cup",c:230,p:18,ca:40,f:0.8},
+            dal_chana:{n:"Chana Dal",u:"High protein",s:"cup",c:269,p:15,ca:45,f:4},
+            dal_urad:{n:"Urad Dal",u:"Protein, iron rich",s:"cup",c:230,p:18,ca:35,f:1},
+            rajma:{n:"Rajma",u:"Protein, fiber",s:"cup",c:225,p:15,ca:40,f:0.9},
+            chole:{n:"Chole",u:"Protein rich chickpeas",s:"cup",c:269,p:15,ca:45,f:4},
+            poha:{n:"Poha",u:"Light breakfast",s:"cup",c:180,p:3,ca:38,f:1.5},
+            upma:{n:"Upma",u:"Breakfast dish",s:"cup",c:220,p:5,ca:42,f:4},
+            idli:{n:"Idli",u:"Fermented, digestible",s:"idli",c:39,p:2,ca:8,f:0.1},
+            dosa:{n:"Dosa",u:"Crispy breakfast",s:"dosa",c:168,p:4,ca:28,f:4},
+            uttapam:{n:"Uttapam",u:"Thick pancake",s:"uttapam",c:150,p:4,ca:26,f:3},
+            paratha:{n:"Paratha",u:"Stuffed flatbread",s:"paratha",c:126,p:3,ca:18,f:4.4},
+            puri:{n:"Puri",u:"Deep fried bread",s:"puri",c:85,p:2,ca:11,f:4},
+            naan:{n:"Naan",u:"Leavened flatbread",s:"naan",c:262,p:9,ca:45,f:5},
+            kulcha:{n:"Kulcha",u:"Soft flatbread",s:"kulcha",c:180,p:5,ca:30,f:4},
+            bhatura:{n:"Bhatura",u:"Deep fried bread",s:"bhatura",c:200,p:5,ca:28,f:8},
+            multigrain_bread:{n:"Multigrain Bread",u:"High fiber bread",s:"slice",c:69,p:3.5,ca:11,f:1.1},
+            oats:{n:"Oats",u:"Heart healthy",s:"cup",c:166,p:5.9,ca:28.1,f:3.6},
+            daliya:{n:"Daliya",u:"Broken wheat",s:"cup",c:151,p:5.5,ca:33.2,f:0.5},
+            khichdi:{n:"Khichdi",u:"Comfort food",s:"cup",c:180,p:6,ca:35,f:2},
+            biryani:{n:"Veg Biryani",u:"Aromatic rice dish",s:"cup",c:250,p:6,ca:45,f:6},
+            pulao:{n:"Pulao",u:"Spiced rice",s:"cup",c:220,p:5,ca:42,f:4},
+            sambar:{n:"Sambar",u:"Lentil vegetable stew",s:"cup",c:120,p:6,ca:20,f:2},
+            rasam:{n:"Rasam",u:"Digestive soup",s:"cup",c:80,p:3,ca:12,f:2},
+            lemon_rice:{n:"Lemon Rice",u:"Tangy rice dish",s:"cup",c:210,p:4,ca:42,f:4},
+            curd_rice:{n:"Curd Rice",u:"Cooling rice dish",s:"cup",c:190,p:6,ca:36,f:3},
+            pongal:{n:"Pongal",u:"Rice lentil dish",s:"cup",c:200,p:7,ca:38,f:3},
+            vada:{n:"Vada",u:"Crispy fritter",s:"vada",c:150,p:5,ca:18,f:7},
+            appam:{n:"Appam",u:"Rice pancake",s:"appam",c:110,p:2,ca:22,f:2},
+            ragi_dosa:{n:"Ragi Dosa",u:"Calcium rich dosa",s:"dosa",c:140,p:4,ca:26,f:2},
+            bajra_roti:{n:"Bajra Roti",u:"Iron rich roti",s:"roti",c:97,p:3.6,ca:18.7,f:1.4},
+            jowar_roti:{n:"Jowar Roti",u:"Gluten free roti",s:"roti",c:100,p:3.5,ca:20,f:1.2},
+            makki_roti:{n:"Makki Roti",u:"Corn flatbread",s:"roti",c:120,p:3,ca:24,f:2},
+            methi_paratha:{n:"Methi Paratha",u:"Iron rich paratha",s:"paratha",c:140,p:4,ca:20,f:5},
+            aloo_paratha:{n:"Aloo Paratha",u:"Potato stuffed",s:"paratha",c:150,p:3.5,ca:22,f:5.5},
+            paneer_paratha:{n:"Paneer Paratha",u:"Protein rich paratha",s:"paratha",c:160,p:6,ca:20,f:6},
+            stuffed_kulcha:{n:"Stuffed Kulcha",u:"Soft stuffed bread",s:"kulcha",c:200,p:6,ca:32,f:5},
+            jeera_rice:{n:"Jeera Rice",u:"Cumin flavored",s:"cup",c:210,p:4,ca:43,f:4},
+            kashmiri_pulao:{n:"Kashmiri Pulao",u:"Fruit rice",s:"cup",c:240,p:5,ca:46,f:5},
+            veg_pulao:{n:"Veg Pulao",u:"Vegetable rice",s:"cup",c:220,p:5,ca:42,f:4},
+            tamarind_rice:{n:"Tamarind Rice",u:"Tangy rice",s:"cup",c:215,p:4,ca:43,f:4},
+            coconut_rice:{n:"Coconut Rice",u:"Aromatic coconut rice",s:"cup",c:230,p:4,ca:44,f:5},
+            tomato_rice:{n:"Tomato Rice",u:"Tangy tomato rice",s:"cup",c:205,p:4,ca:41,f:3.5},
+            mint_rice:{n:"Mint Rice",u:"Refreshing rice",s:"cup",c:210,p:4,ca:42,f:4},
+            pesarattu:{n:"Pesarattu",u:"Moong dal dosa",s:"dosa",c:155,p:6,ca:26,f:3},
+            akki_roti:{n:"Akki Roti",u:"Rice flatbread",s:"roti",c:130,p:2.5,ca:26,f:2.5},
+            thepla:{n:"Thepla",u:"Spiced flatbread",s:"thepla",c:110,p:3,ca:18,f:3},
+            dhokla:{n:"Dhokla",u:"Steamed cake",s:"piece",c:160,p:4,ca:32,f:1.5},
+            khandvi:{n:"Khandvi",u:"Gram flour rolls",s:"piece",c:120,p:5,ca:18,f:4},
+            handvo:{n:"Handvo",u:"Savory cake",s:"piece",c:180,p:6,ca:28,f:6},
+            methi_thepla:{n:"Methi Thepla",u:"Fenugreek bread",s:"thepla",c:115,p:3.5,ca:18,f:3.5},
+            sabudana_khichdi:{n:"Sabudana Khichdi",u:"Tapioca dish",s:"cup",c:180,p:2,ca:40,f:2},
+            poori:{n:"Poori",u:"Puffed bread",s:"poori",c:85,p:2,ca:11,f:4},
+            aloo_puri:{n:"Aloo Puri",u:"Potato curry with puri",s:"serving",c:200,p:5,ca:32,f:7},
+            masala_dosa:{n:"Masala Dosa",u:"Potato filled dosa",s:"dosa",c:220,p:6,ca:38,f:6},
+            rava_dosa:{n:"Rava Dosa",u:"Crispy semolina dosa",s:"dosa",c:180,p:5,ca:30,f:5},
+            set_dosa:{n:"Set Dosa",u:"Soft thick dosa",s:"dosa",c:150,p:4,ca:26,f:3},
+            neer_dosa:{n:"Neer Dosa",u:"Thin rice dosa",s:"dosa",c:100,p:2,ca:20,f:1},
+            wheat_dosa:{n:"Wheat Dosa",u:"Whole wheat dosa",s:"dosa",c:140,p:4,ca:25,f:2.5},
+            oats_dosa:{n:"Oats Dosa",u:"Fiber rich dosa",s:"dosa",c:135,p:5,ca:23,f:3},
+            moong_dosa:{n:"Moong Dal Dosa",u:"Protein rich dosa",s:"dosa",c:145,p:7,ca:24,f:2},
+            adai:{n:"Adai",u:"Multi lentil pancake",s:"adai",c:170,p:8,ca:28,f:3},
+            medu_vada:{n:"Medu Vada",u:"Crispy fritter",s:"vada",c:150,p:5,ca:18,f:7}
+        };
+        
+        var t = document.querySelector('.food-select').innerHTML;
+        
+    
+        /* CO3: FUNCTIONS - Reusable code blocks */
+        // CO4: DOM MANIPULATION - Creates new food row
+        function addRow() {
+            var m = document.getElementById("mealBuilder");
+            var n = document.createElement("div");
+            n.className = "food-row";
+            n.innerHTML = '<select class="food-select" required>' + t + '</select><input type="number" step="0.5" min="0.5" max="1000" required placeholder="Quantity"><button class="remove-btn" onclick="this.parentElement.remove()">✕</button>';
+            m.appendChild(n);
+        }
+        
+        function searchFoods() {
+            var q = document.getElementById("searchBox").value.toLowerCase();
+            var r = document.getElementById("searchResults");
+            var h = "";
+            
+            if (q.length < 2) {
+                r.classList.remove("show");
+                return;
+            }
+            
+            // CO3: LOOP - Filters matching foods
+            var matches = Object.keys(foods).filter(function(k) {
+                return foods[k].n.toLowerCase().includes(q);
+            }).slice(0, 8);
+            
+            if (matches.length === 0) {
+                r.classList.remove("show");
+                return;
+            }
+            
+            // CO3: LOOP - Creates HTML for each result
+            matches.forEach(function(k) {
+                h += '<div class="search-item" onclick="selectFromSearch(\'' + k + '\')"><div class="search-name">' + foods[k].n + '</div><div class="search-use">' + foods[k].u + '</div></div>';
+            });
+            
+            r.innerHTML = h;
+            r.classList.add("show");
+        }
+        
+        function selectFromSearch(k) {
+            var rows = document.querySelectorAll(".food-row");
+            var lastRow = rows[rows.length - 1];
+            var sel = lastRow.querySelector(".food-select");
+            sel.value = k;
+            document.getElementById("searchBox").value = "";
+            document.getElementById("searchResults").classList.remove("show");
+        }
+        
+        // CATEGORY FILTER
+        function filterCat(cat) {
+            var pills = document.querySelectorAll(".category-pill");
+            pills.forEach(function(p) { p.classList.remove("active"); });
+            event.target.classList.add("active");
+            
+            var selects = document.querySelectorAll(".food-select");
+            selects.forEach(function(sel) {
+                var opts = sel.querySelectorAll("option");
+                opts.forEach(function(opt) {
+                    if (cat === "all") {
+                        opt.style.display = "block";
+                    } else {
+                        var og = opt.parentElement;
+                        if (og.tagName === "OPTGROUP") {
+                            var ogLabel = og.getAttribute("label").toLowerCase();
+                            if ((cat === "veg" && ogLabel.includes("vegetable")) ||
+                                (cat === "fruit" && ogLabel.includes("fruit")) ||
+                                (cat === "dairy" && ogLabel.includes("dairy")) ||
+                                (cat === "indian" && ogLabel.includes("indian"))) {
+                                opt.style.display = "block";
+                            } else {
+                                opt.style.display = "none";
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        /* CO3: LOOPS + CO5: EXCEPTION HANDLING */
+       
+        
+        function calc() {
+            // CO5: TRY-CATCH - Error handling
+            try {
+                var r = document.querySelectorAll(".food-row");
+                var items = [];
+                var tc = 0, tp = 0, tca = 0, tf = 0;
+                
+                // CO3: LOOP - Process each food row
+                r.forEach(function(row) {
+                    var f = row.querySelector(".food-select").value;
+                    var q = parseFloat(row.querySelector("input").value);
+                    
+                    // CO5: VALIDATION - Check user input
+                    if (!f) throw new Error("Please select a food item");
+                    if (!q || q <= 0) throw new Error("Please enter a valid quantity");
+                    
+                    var food = foods[f];
+                    var cal = (food.c * q).toFixed(1);
+                    var pro = (food.p * q).toFixed(1);
+                    var carb = (food.ca * q).toFixed(1);
+                    var fat = (food.f * q).toFixed(1);
+                    
+                    items.push({
+                        name: food.n,
+                        use: food.u,
+                        q: q,
+                        s: food.s,
+                        cal: cal,
+                        pro: pro,
+                        carb: carb,
+                        fat: fat
+                    });
+                    
+                    tc += parseFloat(cal);
+                    tp += parseFloat(pro);
+                    tca += parseFloat(carb);
+                    tf += parseFloat(fat);
+                });
+                
+                if (items.length === 0) throw new Error("Please add at least one food item");
+                
+                var h = "";
+                
+                // CO3: LOOP - Generate HTML for each item
+                items.forEach(function(i) {
+                    var d = "";
+                    
+                    if (i.s === "gram") {
+                        d = i.q + (i.q === 1 ? " gram" : " grams");
+                    } else if (i.s === "clove") {
+                        d = i.q === 1 ? "1 clove" : i.q + " cloves";
+                    } else if (i.s === "apple" || i.s === "banana" || i.s === "orange" || i.s === "tomato" || i.s === "onion" || i.s === "carrot" || i.s === "potato" || i.s === "pepper" || i.s === "cucumber" || i.s === "beet" || i.s === "guava" || i.s === "mango" || i.s === "avocado" || i.s === "lime" || i.s === "lemon" || i.s === "fig" || i.s === "date" || i.s === "apricot" || i.s === "kiwi" || i.s === "plum" || i.s === "peach" || i.s === "pear" || i.s === "artichoke" || i.s === "fruit" || i.s === "grapefruit" || i.s === "nectarine" || i.s === "tangerine" || i.s === "persimmon" || i.s === "amla") {
+                        d = i.q === 1 ? "1 " + i.s : i.q + " " + i.s + "s";
+                    } else if (i.s === "chapati" || i.s === "roti" || i.s === "dosa" || i.s === "idli" || i.s === "vada" || i.s === "paratha" || i.s === "puri" || i.s === "naan" || i.s === "kulcha" || i.s === "bhatura" || i.s === "appam" || i.s === "thepla" || i.s === "adai" || i.s === "uttapam" || i.s === "poori") {
+                        d = i.q === 1 ? "1 " + i.s : i.q + " " + i.s + "s";
+                    } else {
+                        d = i.q + " " + i.s + (i.q > 1 ? "s" : "");
+                    }
+                    
+                    h += '<div class="item-breakdown">' +
+                         '<div class="item-name">' + i.name + ' (' + d + ')</div>' +
+                         '<div class="item-use">✨' + i.use + '</div>' +
+                         '<div class="nutrition-row"><span class="nutrition-label">Calories:</span><span class="nutrition-value">' + i.cal + ' kcal</span></div>' +
+                         '<div class="nutrition-row"><span class="nutrition-label">Protein:</span><span class="nutrition-value">' + i.pro + ' g</span></div>' +
+                         '<div class="nutrition-row"><span class="nutrition-label">Carbs:</span><span class="nutrition-value">' + i.carb + ' g</span></div>' +
+                         '<div class="nutrition-row"><span class="nutrition-label">Fat:</span><span class="nutrition-value">' + i.fat + ' g</span></div>' +
+                         '</div>';
+                });
+                
+                // CO4: DOM MANIPULATION - Update page with results
+                document.getElementById("items").innerHTML = h;
+                document.getElementById("tc").innerText = tc.toFixed(1) + " kcal";
+                document.getElementById("tp").innerText = tp.toFixed(1) + " g";
+                document.getElementById("tca").innerText = tca.toFixed(1) + " g";
+                document.getElementById("tf").innerText = tf.toFixed(1) + " g";
+                document.getElementById("itemCount").innerText = items.length;
+                
+                // Update progress bars
+                var calPct = Math.min((tc / 2000) * 100, 100);
+                var proPct = Math.min((tp / 50) * 100, 100);
+                var carbPct = Math.min((tca / 300) * 100, 100);
+                var fatPct = Math.min((tf / 70) * 100, 100);
+                
+                document.getElementById("calGoal").innerText = Math.round(tc) + "/2000";
+                document.getElementById("proGoal").innerText = Math.round(tp) + "/50g";
+                document.getElementById("carbGoal").innerText = Math.round(tca) + "/300g";
+                document.getElementById("fatGoal").innerText = Math.round(tf) + "/70g";
+                
+                document.getElementById("calProg").style.width = calPct + "%";
+                document.getElementById("proProg").style.width = proPct + "%";
+                document.getElementById("carbProg").style.width = carbPct + "%";
+                document.getElementById("fatProg").style.width = fatPct + "%";
+                
+                document.getElementById("res").classList.add("show");
+                
+            } catch (e) {
+                // CO5: CATCH - Display error message
+                alert(e.message);
+            }
+        }
+    </script>
+</body>
+</html>
